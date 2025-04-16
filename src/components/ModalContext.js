@@ -6,19 +6,13 @@ const ModalContext = createContext();
 // Create a provider component
 export const ModalProvider = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedOperationType, setSelectedOperationType] = useState(
-    parseInt(sessionStorage.getItem("xMethod")) || 0
-  );
+  const [selectedOperationType, setSelectedOperationType] = useState(0);
   const [selectedType, setSelectedType] = useState(
-    sessionStorage.getItem("selectedType") || "pool"
+    sessionStorage.getItem("selectedType") || "swap"
   );
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-
-  useEffect(() => {
-    sessionStorage.setItem("xMethod", selectedOperationType);
-  }, [selectedOperationType]);
 
   useEffect(() => {
     sessionStorage.setItem("selectedType", selectedType);
@@ -41,5 +35,11 @@ export const ModalProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use the modal context
-export const useModal = () => useContext(ModalContext);
+// Create a custom hook for using the context
+export const useModal = () => {
+  const context = useContext(ModalContext);
+  if (!context) {
+    throw new Error("useModal must be used within a ModalProvider");
+  }
+  return context;
+};
